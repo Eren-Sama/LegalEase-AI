@@ -1,0 +1,128 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // User authentication required
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             resource.metadata != null &&
+             resource.metadata.role == 'admin';
+    }
+    
+    // Validate file type
+    function isValidFileType() {
+      return resource.contentType in [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/msword',
+        'image/jpeg',
+        'image/jpg', 
+        'image/png'
+      ];
+    }
+    
+    // Validate file size (max 10MB)
+    function isValidFileSize() {
+      return resource.size <= 10 * 1024 * 1024;
+    }
+    
+    // User documents
+    match /users/{userId}/documents/{documentId} {
+      // Allow read/write for document owner
+      allow read, write: if isAuthenticated() && 
+                            isOwner(userId) &&
+                            isValidFileType() &&
+                            isValidFileSize();
+      
+      // Allow admin access
+      allow read, write: if isAdmin();
+      
+      // Allow create with validation
+      allow create: if isAuthenticated() && 
+                       isOwner(userId) &&
+                       request.resource.contentType in [
+                         'application/pdf',
+                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                         'application/msword',
+                         'image/jpeg',
+                         'image/jpg',
+                         'image/png'
+                       ] &&
+                       request.resource.size <= 10 * 1024 * 1024;
+    }
+
+    // User profile images
+    match /users/{userId}/profile/{imageId} {
+      allow read, write: if isAuthenticated() && 
+                            isOwner(userId) &&
+                            request.resource.contentType.matches('image/.*') &&
+                            request.resource.size <= 2 * 1024 * 1024; // 2MB limit for profile images
+    }
+
+    // Shared documents
+    match /shared/{shareId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+                      resource.metadata != null &&
+                      resource.metadata.ownerId == request.auth.uid;
+    }
+
+    // Team documents
+    match /teams/{teamId}/documents/{documentId} {
+      allow read, write: if isAuthenticated() && 
+                            resource.metadata != null &&
+                            request.auth.uid in resource.metadata.teamMembers;
+    }
+
+    // Public templates (read-only for authenticated users)
+    match /templates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // System assets (admin only)
+    match /system/{assetId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Backup files (admin only)
+    match /backups/{backupId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Processed document outputs
+    match /processed/{userId}/{documentId}/{outputId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow read: if isAdmin();
+    }
+
+    // Temporary upload files (auto-delete after 24 hours)
+    match /temp/{userId}/{uploadId} {
+      allow read, write: if isAuthenticated() && 
+                            isOwner(userId) &&
+                            isValidFileType() &&
+                            isValidFileSize();
+      
+      // Auto-delete rule handled by Cloud Function
+    }
+
+    // Analytics and logs (admin only)
+    match /analytics/{analyticsId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

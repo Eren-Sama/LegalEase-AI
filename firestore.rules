@@ -1,0 +1,197 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User authentication required for all operations
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Validate user data
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'createdAt', 'updatedAt']) &&
+             data.email is string &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
+    }
+    
+    // Validate document data
+    function isValidDocument(data) {
+      return data.keys().hasAll(['name', 'type', 'status', 'createdAt', 'userId']) &&
+             data.name is string &&
+             data.type in ['pdf', 'docx', 'doc', 'jpg', 'jpeg', 'png'] &&
+             data.status in ['uploading', 'processing', 'completed', 'failed'] &&
+             data.createdAt is timestamp &&
+             data.userId is string;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow read: if isAdmin();
+      
+      allow create: if isAuthenticated() && 
+                       isOwner(userId) && 
+                       isValidUser(resource.data);
+      
+      allow update: if isAuthenticated() && 
+                       isOwner(userId) && 
+                       isValidUser(resource.data) &&
+                       resource.data.createdAt == request.resource.data.createdAt;
+    }
+
+    // User profiles subcollection
+    match /users/{userId}/profile/{profileId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow read: if isAdmin();
+    }
+
+    // User settings subcollection  
+    match /users/{userId}/settings/{settingId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Documents collection
+    match /documents/{documentId} {
+      allow read, write: if isAuthenticated() && 
+                            isOwner(resource.data.userId);
+      
+      allow create: if isAuthenticated() && 
+                       isOwner(request.resource.data.userId) &&
+                       isValidDocument(request.resource.data);
+      
+      allow list: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Admin access
+      allow read, write: if isAdmin();
+    }
+
+    // Document analysis subcollection
+    match /documents/{documentId}/analysis/{analysisId} {
+      allow read, write: if isAuthenticated() && 
+                            exists(/databases/$(database)/documents/documents/$(documentId)) &&
+                            get(/databases/$(database)/documents/documents/$(documentId)).data.userId == request.auth.uid;
+      
+      allow read, write: if isAdmin();
+    }
+
+    // Document comments subcollection
+    match /documents/{documentId}/comments/{commentId} {
+      allow read, write: if isAuthenticated() && 
+                            exists(/databases/$(database)/documents/documents/$(documentId)) &&
+                            get(/databases/$(database)/documents/documents/$(documentId)).data.userId == request.auth.uid;
+      
+      allow create: if isAuthenticated() && 
+                       request.resource.data.authorId == request.auth.uid;
+    }
+
+    // Shared documents collection
+    match /shared-documents/{shareId} {
+      allow read: if isAuthenticated() && 
+                     (resource.data.userId == request.auth.uid ||
+                      request.auth.uid in resource.data.sharedWith);
+      
+      allow create, update: if isAuthenticated() && 
+                               isOwner(resource.data.userId);
+      
+      allow delete: if isAuthenticated() && 
+                       isOwner(resource.data.userId);
+    }
+
+    // Teams collection
+    match /teams/{teamId} {
+      allow read: if isAuthenticated() && 
+                     request.auth.uid in resource.data.members;
+      
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == request.resource.data.ownerId;
+      
+      allow update: if isAuthenticated() && 
+                       (request.auth.uid == resource.data.ownerId ||
+                        request.auth.uid in resource.data.admins);
+      
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == resource.data.ownerId;
+    }
+
+    // Team members subcollection
+    match /teams/{teamId}/members/{memberId} {
+      allow read: if isAuthenticated() && 
+                     exists(/databases/$(database)/documents/teams/$(teamId)) &&
+                     request.auth.uid in get(/databases/$(database)/documents/teams/$(teamId)).data.members;
+      
+      allow write: if isAuthenticated() && 
+                      exists(/databases/$(database)/documents/teams/$(teamId)) &&
+                      (request.auth.uid == get(/databases/$(database)/documents/teams/$(teamId)).data.ownerId ||
+                       request.auth.uid in get(/databases/$(database)/documents/teams/$(teamId)).data.admins);
+    }
+
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read, write: if isAuthenticated() && 
+                            isOwner(resource.data.userId);
+      
+      allow create: if isAuthenticated() && 
+                       isOwner(request.resource.data.userId);
+    }
+
+    // System logs (admin only)
+    match /system-logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Analytics data (admin only)
+    match /analytics/{analyticsId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Templates collection (public read, admin write)
+    match /templates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Legal glossary (public read, admin write)
+    match /glossary/{termId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Billing and subscription data
+    match /subscriptions/{subscriptionId} {
+      allow read, write: if isAuthenticated() && 
+                            isOwner(resource.data.userId);
+      allow read: if isAdmin();
+    }
+
+    // Payment history
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() && 
+                     isOwner(resource.data.userId);
+      allow read, write: if isAdmin();
+    }
+
+    // Rate limiting
+    match /rate-limits/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+      allow read, write: if isAdmin();
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

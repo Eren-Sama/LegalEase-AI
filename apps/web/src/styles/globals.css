@@ -1,0 +1,485 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+
+/* CSS Variables for theming */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    
+    --radius: 0.5rem;
+
+    /* Font variables */
+    --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-fira-code: 'Fira Code', 'Consolas', monospace;
+    --font-cal-sans: 'Cal Sans', system-ui, sans-serif;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 0 0% 3%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 65%;
+    
+    --accent: 0 84% 60%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 15%;
+    --input: 0 0% 10%;
+    --ring: 0 84% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-inter);
+  }
+
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/40;
+  }
+
+  /* Selection styles */
+  ::selection {
+    @apply bg-primary/20;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+
+  /* Heading styles */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Link styles */
+  a {
+    @apply text-primary hover:text-primary/80 transition-colors;
+  }
+
+  /* Button reset */
+  button {
+    @apply outline-none;
+  }
+
+  /* Input styles */
+  input, textarea, select {
+    @apply outline-none;
+  }
+
+  /* Code styles */
+  code {
+    @apply font-mono text-sm;
+  }
+
+  pre {
+    @apply font-mono text-sm;
+  }
+
+  /* Utility classes for animations */
+  .animate-in {
+    @apply animate-fade-in;
+  }
+
+  .animate-out {
+    @apply animate-fade-out;
+  }
+}
+
+@layer components {
+  /* Custom component styles */
+  
+  /* Loading spinner */
+  .loading-spinner {
+    @apply inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full animate-spin;
+  }
+
+  /* Glass morphism effect */
+  .glass-card {
+    @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-xl;
+  }
+
+  .glass-card-dark {
+    @apply backdrop-blur-xl bg-black/10 border border-white/10 shadow-xl;
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent;
+  }
+
+  /* Premium glow effect */
+  .glow-effect {
+    @apply shadow-lg shadow-primary/25;
+  }
+
+  .glow-effect-hover {
+    @apply hover:shadow-xl hover:shadow-primary/30 transition-shadow duration-300;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-card text-card-foreground rounded-lg border shadow-sm;
+  }
+
+  .card-header {
+    @apply p-6 pb-3;
+  }
+
+  .card-content {
+    @apply p-6 pt-0;
+  }
+
+  .card-footer {
+    @apply p-6 pt-0;
+  }
+
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 py-2 px-4;
+  }
+
+  .btn-outline {
+    @apply border border-input hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4;
+  }
+
+  .btn-link {
+    @apply underline-offset-4 hover:underline text-primary h-10 py-2 px-4;
+  }
+
+  /* Input styles */
+  .input {
+    @apply flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .textarea {
+    @apply flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Label styles */
+  .label {
+    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+
+  /* Premium UI patterns */
+  .premium-border {
+    @apply border border-gradient-to-r from-primary/50 to-primary/20;
+  }
+
+  .premium-shadow {
+    @apply shadow-2xl shadow-primary/10;
+  }
+
+  .premium-gradient {
+    @apply bg-gradient-to-br from-primary/10 via-primary/5 to-transparent;
+  }
+
+  /* Document viewer styles */
+  .document-viewer {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+  }
+
+  .document-page {
+    @apply border-b border-gray-200 dark:border-gray-700 last:border-b-0;
+  }
+
+  /* Risk indicator styles */
+  .risk-low {
+    @apply text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/20;
+  }
+
+  .risk-medium {
+    @apply text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/20;
+  }
+
+  .risk-high {
+    @apply text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/20;
+  }
+
+  /* Status indicators */
+  .status-success {
+    @apply text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/20;
+  }
+
+  .status-warning {
+    @apply text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/20;
+  }
+
+  .status-error {
+    @apply text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/20;
+  }
+
+  .status-info {
+    @apply text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/20;
+  }
+
+  /* Loading states */
+  .skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  .shimmer {
+    @apply relative overflow-hidden bg-muted;
+  }
+
+  .shimmer::after {
+    @apply absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent;
+    content: '';
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@layer utilities {
+  /* Custom utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Container queries */
+  .container-xs {
+    @apply max-w-xs;
+  }
+
+  .container-sm {
+    @apply max-w-sm;
+  }
+
+  .container-md {
+    @apply max-w-md;
+  }
+
+  .container-lg {
+    @apply max-w-lg;
+  }
+
+  .container-xl {
+    @apply max-w-xl;
+  }
+
+  .container-2xl {
+    @apply max-w-2xl;
+  }
+
+  .container-3xl {
+    @apply max-w-3xl;
+  }
+
+  .container-4xl {
+    @apply max-w-4xl;
+  }
+
+  .container-5xl {
+    @apply max-w-5xl;
+  }
+
+  .container-6xl {
+    @apply max-w-6xl;
+  }
+
+  .container-7xl {
+    @apply max-w-7xl;
+  }
+
+  /* Responsive spacing */
+  .space-y-responsive > * + * {
+    @apply mt-4 sm:mt-6 lg:mt-8;
+  }
+
+  .space-x-responsive > * + * {
+    @apply ml-4 sm:ml-6 lg:ml-8;
+  }
+
+  /* Print styles */
+  @media print {
+    .no-print {
+      @apply hidden;
+    }
+
+    .print-only {
+      @apply block;
+    }
+
+    .print-break-before {
+      page-break-before: always;
+    }
+
+    .print-break-after {
+      page-break-after: always;
+    }
+
+    .print-avoid-break {
+      page-break-inside: avoid;
+    }
+  }
+}
+
+/* React PDF styles */
+.react-pdf__Page {
+  @apply shadow-lg mb-4;
+}
+
+.react-pdf__Page__canvas {
+  @apply mx-auto;
+}
+
+/* Highlight.js theme override for code blocks */
+.hljs {
+  @apply bg-muted text-foreground p-4 rounded-lg overflow-x-auto;
+}
+
+.hljs-comment {
+  @apply text-muted-foreground;
+}
+
+.hljs-keyword {
+  @apply text-primary font-semibold;
+}
+
+.hljs-string {
+  @apply text-green-600 dark:text-green-400;
+}
+
+.hljs-number {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+.hljs-title {
+  @apply text-purple-600 dark:text-purple-400;
+}
+
+/* Custom checkbox and radio styles */
+input[type="checkbox"]:checked {
+  @apply bg-primary border-primary;
+}
+
+input[type="radio"]:checked {
+  @apply bg-primary border-primary;
+}
+
+/* Focus trap styles for modals */
+.focus-trap-active {
+  @apply outline-none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn {
+    @apply border-2;
+  }
+  
+  .input {
+    @apply border-2;
+  }
+  
+  a {
+    @apply underline;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    @apply animate-none transition-none;
+  }
+  
+  .loading-spinner {
+    @apply animate-none;
+  }
+}
+
+/* Force color scheme for better dark mode support */
+html {
+  color-scheme: light dark;
+}
+
+html.dark {
+  color-scheme: dark;
+}
