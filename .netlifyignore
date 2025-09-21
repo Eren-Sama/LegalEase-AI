@@ -1,0 +1,58 @@
+# Netlify Ignore File
+# Files and directories to exclude from deployment
+
+# Local environment files (keep .env.local out of builds)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Development and example files
+.env.example
+*.log
+logs/
+README.md
+CHANGELOG.md
+docs/
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Test files
+__tests__/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+coverage/
+
+# Git files
+.git/
+.gitignore
+
+# Firebase development files
+.firebaserc
+firebase-debug.log
+firestore-debug.log
+
+# Node modules (handled automatically)
+node_modules/
+
+# Build artifacts that shouldn't be in source
+dist/
+build/
+.next/
+
+# Temporary files
+tmp/
+temp/
+
+# Package manager files
+.pnpm-debug.log*
+yarn-error.log*
+npm-debug.log*
