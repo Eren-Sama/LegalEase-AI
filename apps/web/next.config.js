@@ -9,6 +9,15 @@ const nextConfig = {
   // Transpile workspace packages
   transpilePackages: ['@legalease/types', '@legalease/utils', '@legalease/config'],
 
+  // Vercel optimizations
+  output: 'standalone',
+  
+  // Image optimization
+  images: {
+    domains: ['firebasestorage.googleapis.com', 'lh3.googleusercontent.com'],
+    unoptimized: false,
+  },
+
   // Webpack configuration to handle server-side only modules
   webpack: (config, { isServer }) => {
     if (!isServer) {
