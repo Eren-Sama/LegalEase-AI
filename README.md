@@ -1,6 +1,61 @@
-# LegalEase AI - Complete Production-Ready MVP
+# LegalEase AI - Legal Document Analysis Platform 🏛️
 
-A premium legal document simplification platform powered by AI, built with Next.js 14, Firebase, and Google Cloud AI services.
+> **AI-powered legal document analysis platform built with Next.js 14.2, Firebase, and Gemini AI. Features document analysis, chatbot assistance, PDF reports, and comprehensive legal insights.**
+
+[![Next.js](https://img.shields.io/badge/Next.js-14.2-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-10.0-orange?logo=firebase)](https://firebase.google.com/)
+[![Gemini AI](https://img.shields.io/badge/Gemini_AI-Latest-purple?logo=google)](https://ai.google.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+## 🎯 Live Demo & Repository
+
+- **🌐 Repository:** https://github.com/Eren-Sama/LegalEase-AI
+- **📱 Demo:** *Coming Soon - Deploy with one click!*
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ 
+- pnpm (recommended) or npm
+- Firebase account
+- Google Cloud account (for Gemini AI)
+
+### 1. Clone & Install
+```bash
+git clone https://github.com/Eren-Sama/LegalEase-AI.git
+cd LegalEase-AI
+pnpm install
+```
+
+### 2. Environment Setup
+```bash
+# Copy environment template
+cp .env.example .env.local
+cp apps/web/.env.local.example apps/web/.env.local
+
+# Edit with your credentials
+nano .env.local
+nano apps/web/.env.local
+```
+
+### 3. Firebase Configuration
+1. Create Firebase project at https://console.firebase.google.com
+2. Enable Authentication, Firestore, Storage
+3. Add your config to `.env.local`
+
+### 4. Get Gemini API Key
+1. Visit https://aistudio.google.com/app/apikey
+2. Create API key
+3. Add to `GEMINI_API_KEY` in `.env.local`
+
+### 5. Run Development Server
+```bash
+cd apps/web
+pnpm dev
+```
+
+Visit http://localhost:3000 🎉
 
 ## 🚀 Features
 
@@ -326,7 +381,63 @@ The application provides RESTful APIs for:
    pnpm build
    ```
 
-4. **Port conflicts**:
+## 🚀 Deployment
+
+### Deploy to Vercel (Recommended)
+1. **Connect Repository:**
+   - Visit [Vercel](https://vercel.com)
+   - Import `https://github.com/Eren-Sama/LegalEase-AI`
+
+2. **Configure Build:**
+   - Root Directory: `apps/web`
+   - Build Command: `pnpm build`
+   - Output Directory: `.next`
+
+3. **Environment Variables:**
+   Add all variables from `.env.local` to Vercel dashboard
+
+4. **Deploy:**
+   - Click "Deploy" 
+   - Get your live URL! 🎉
+
+### Deploy to Netlify
+1. **Connect Repository:**
+   - Visit [Netlify](https://netlify.com)
+   - Import from Git: `https://github.com/Eren-Sama/LegalEase-AI`
+
+2. **Build Settings:**
+   - Base Directory: `apps/web`
+   - Build Command: `pnpm build && pnpm export`
+   - Publish Directory: `apps/web/out`
+
+3. **Environment Variables:**
+   Add all your `.env.local` variables in Netlify dashboard
+
+### Deploy to Firebase Hosting
+```bash
+# Install Firebase CLI
+npm install -g firebase-tools
+
+# Login to Firebase
+firebase login
+
+# Deploy
+firebase deploy --only hosting
+```
+
+### Manual Server Deployment
+```bash
+# Build production
+cd apps/web
+pnpm build
+
+# Start production server
+pnpm start
+# or
+node .next/standalone/server.js
+```
+
+## 🔧 Troubleshooting
    - Change port in package.json dev script
    - Kill processes using port 3000
 
